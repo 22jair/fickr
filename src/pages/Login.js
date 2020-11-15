@@ -71,7 +71,6 @@ export default function SignInSide() {
     password: "123",
   });
 
-  
   useEffect(() => {
     setLoadingPage(true);
     if (localStorage.getItem("fickrUser") !== null) {
