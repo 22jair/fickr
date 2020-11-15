@@ -68,8 +68,8 @@ export default function SignInSide() {
   const [loadingPage, setLoadingPage] = useState(true);
   const [login, setLogin] = useState({
     name: "",
-    email: "usuario01@usuario01.com",
-    password: "123",
+    email: "",
+    password: "",
   });
 
   const [userData, setUserData] = useState({
