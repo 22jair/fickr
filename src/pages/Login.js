@@ -67,9 +67,18 @@ export default function SignInSide() {
 
   const [loadingPage, setLoadingPage] = useState(true);
   const [login, setLogin] = useState({
+    name: "",
     email: "usuario01@usuario01.com",
     password: "123",
   });
+
+  const [userData, setUserData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const [createUser, setCreateUser] = useState(false);
 
   useEffect(() => {
     setLoadingPage(true);
@@ -78,7 +87,6 @@ export default function SignInSide() {
     }
     setLoadingPage(false);
   }, []);
-
 
   async function handleLogin() {
     if (login.email === "") return alert("Ingrese emial");
@@ -91,11 +99,30 @@ export default function SignInSide() {
       },
     };
     const resp = await fetch(URL_API_USER + "login", header);
-    resp.status === 200 ? resp.json().then(r=>saveUser(r)) : resp.text().then(r => alert(r))                
+    resp.status === 200
+      ? resp.json().then((r) => saveUser(r))
+      : resp.text().then((r) => alert(r));
   }
 
-  function saveUser(user){
-    localStorage.setItem("fickrUser", JSON.stringify(user))
+  async function handleCreateUser() {
+    if (login.name === "") return alert("Ingrese name");
+    if (login.email === "") return alert("Ingrese emial");
+    if (login.password === "") return alert("Ingrese password");
+    const header = {
+      method: "POST",
+      body: JSON.stringify(login),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const resp = await fetch(URL_API_USER + "create", header);
+    resp.status === 201
+      ? resp.json().then((r) => saveUser(r))
+      : resp.text().then((r) => alert(r));
+  }
+
+  function saveUser(user) {
+    localStorage.setItem("fickrUser", JSON.stringify(user));
     goToMainPage();
   }
 
@@ -106,69 +133,122 @@ export default function SignInSide() {
 
   return (
     <>
-    {loadingPage ? (
-      <div>Cargando</div>
-    ) : (
-     <Grid container component="main" className={classes.root}>
-      <CssBaseline />
-      <Grid item xs={false} sm={4} md={7} className={classes.image} />
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <form className={classes.form} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={login.email}
-              onChange={(e) => setLogin({ ...login, email: e.target.value })}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={login.password}
-              onChange={(e) => setLogin({ ...login, password: e.target.value })}
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              onClick={handleLogin}
-            >
-              Sign In
-            </Button>
+      {loadingPage ? (
+        <div>Cargando</div>
+      ) : (
+        <Grid container component="main" className={classes.root}>
+          <CssBaseline />
+          <Grid item xs={false} sm={4} md={7} className={classes.image} />
+          <Grid
+            item
+            xs={12}
+            sm={8}
+            md={5}
+            component={Paper}
+            elevation={6}
+            square
+          >
+            <div className={classes.paper}>
+              <Avatar className={classes.avatar}>
+                <LockOutlinedIcon />
+              </Avatar>
+              <Typography component="h1" variant="h5">
+                Sign in
+              </Typography>
+              <form className={classes.form} noValidate>
+                {createUser ? (
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="name"
+                    label="Name"
+                    name="name"
+                    autoComplete="name"
+                    autoFocus
+                    value={login.name}
+                    onChange={(e) =>
+                      setLogin({ ...login, name: e.target.value })
+                    }
+                  />
+                ) : null}
 
-            <Box mt={5}>
-              <Copyright />
-            </Box>
-          </form>
-        </div>
-      </Grid>
-    </Grid>
-    )}
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
+                  value={login.email}
+                  onChange={(e) =>
+                    setLogin({ ...login, email: e.target.value })
+                  }
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  value={login.password}
+                  onChange={(e) =>
+                    setLogin({ ...login, password: e.target.value })
+                  }
+                />
+                {/* <FormControlLabel
+                  control={<Checkbox value="remember" color="primary" />}
+                  label="Remember me"
+                /> */}
+
+                {createUser ? (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="default"
+                    className={classes.submit}
+                    onClick={handleCreateUser}
+                  >
+                    Sign up
+                  </Button>
+                ) : (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="secondary"
+                    className={classes.submit}
+                    onClick={handleLogin}
+                  >
+                    Sign In
+                  </Button>
+                )}
+
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  onClick={() => setCreateUser(!createUser)}
+                >
+                  {createUser ? "Login" : "Create Account"}
+                </Button>
+
+                <Box mt={5}>
+                  <Copyright />
+                </Box>
+              </form>
+            </div>
+          </Grid>
+        </Grid>
+      )}
     </>
   );
 }
